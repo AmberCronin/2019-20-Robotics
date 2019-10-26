@@ -2,7 +2,7 @@
 /*                                                                            */
 /*    Module:       main.cpp                                                  */
 /*    Author:       C:\Users\bcronin                                          */
-/*    Created:      Fri Sep 27 2019                                           */
+/*    Created:      Sat Oct 26 2019                                           */
 /*    Description:  V5 project                                                */
 /*                                                                            */
 /*----------------------------------------------------------------------------*/
@@ -18,33 +18,32 @@ vex::motor    LBMotor(vex::PORT2, false);
 vex::motor    RFMotor(vex::PORT3, true);
 vex::motor    RBMotor(vex::PORT4, true);
 
-vex::controller  ctrl(vex::controllerType::primary);
+vex::controller ctrl(vex::controllerType::primary);
 
 
-void driveMech(vex::controller::axis f, vex::controller::axis r, vex::controller::axis s)
+void driveArcade(vex::controller::axis f, vex::controller::axis r)
 {
-  /*
-  void holoSteer(int fb, int strafe, int rot) { //fb = forward/back motion
-    motor[flWheel] = fb + strafe + rot;
-    motor[blWheel] = fb - strafe + rot;
-    motor[brWheel] = -(fb + strafe - rot);
-    motor[frWheel] = -(fb - strafe - rot);
-  }
-  */
-  
   double fwd = f.position();
   double rot = r.position();
-  double stf = s.position();
-  LFMotor.spin(directionType::fwd, fwd + rot + stf, velocityUnits::pct);
-  LBMotor.spin(directionType::fwd, fwd + rot - stf, velocityUnits::pct);
-  RFMotor.spin(directionType::fwd, -(fwd - rot + stf), velocityUnits::pct);
-  RBMotor.spin(directionType::fwd, -(fwd - rot - stf), velocityUnits::pct);
+  LFMotor.spin(directionType::fwd, fwd + rot, velocityUnits::pct);
+  LBMotor.spin(directionType::fwd, fwd + rot, velocityUnits::pct);
+  RFMotor.spin(directionType::fwd, -(fwd - rot), velocityUnits::pct);
+  RBMotor.spin(directionType::fwd, -(fwd - rot), velocityUnits::pct);
+}
+void driveTank(vex::controller::axis l, vex::controller::axis r)
+{
+  double left = l.position();
+  double right = r.position();
+  LFMotor.spin(directionType::fwd, left, velocityUnits::pct);
+  LBMotor.spin(directionType::fwd, left, velocityUnits::pct);
+  RFMotor.spin(directionType::fwd, -1 * right, velocityUnits::pct);
+  RBMotor.spin(directionType::fwd, -1 * right, velocityUnits::pct);
 }
 
-int main()
-{
+int main() {
   while(1)
   {
-    driveMech(ctrl.Axis1, ctrl.Axis2, ctrl.Axis4);
+    driveArcade(ctrl.Axis1, ctrl.Axis2);
+    //driveTank(ctrl.Axis1, ctrl.Axis4);
   }
 }
