@@ -12,27 +12,36 @@ vex::brain      Brain;
 //vex::motor      ReverseForebar1(PORT3, false);
 //vex::motor      ReverseForebar2(PORT4, false);
 
-vex::motor* motor_list;
+vex::motor* drive_motors;
+vex::motor* arm_motors;
 
-vex::limit l1(Brain.ThreeWirePort.A);
+vex::limit lim1(Brain.ThreeWirePort.A);
 
 vex::controller ctrl(vex::controllerType::primary);
 
-vex::motor* AllocMotorList(int size) {
+vex::motor* AllocMotorList(vex::motor* list, int size) {
   vex::motor* tmotor_list = (vex::motor*)malloc(sizeof(vex::motor*) * size);
   return tmotor_list;
 }
 
-void initMotorList()
+void initDriveMotorList()
 {
-  motor_list = AllocMotorList(4);
-  motor_list[0] = vex::motor(PORT1, false);
-  motor_list[1] = vex::motor(PORT2, false);
+  drive_motors = AllocMotorList(drive_motors, 4);
+  drive_motors[0] = vex::motor(PORT1, false);
+  drive_motors[1] = vex::motor(PORT2, false);
+  drive_motors[2] = vex::motor(PORT3, false);
+  drive_motors[3] = vex::motor(PORT4, false);
+}
+void initArmMotorList()
+{
+  arm_motors = AllocMotorList(arm_motors, 2);
+  arm_motors[0] = vex::motor(PORT5, false);
+  arm_motors[1] = vex::motor(PORT6, false);
 }
 
 int main() {
-  initMotorList();
-  //LaudroLimit(motor_list, 2, l1, 100, directionType::fwd);
-  HandleInputs(ctrl, motor_list, 2);
+  initDriveMotorList();
+  LaudroLimit(drive_motors, 4, lim1, 100, directionType::fwd);
+  HandleInputs(ctrl, arm_motors, 2);
   return 0;
 }
