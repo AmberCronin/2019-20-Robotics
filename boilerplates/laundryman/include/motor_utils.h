@@ -18,13 +18,54 @@ void ReverseMotor(vex::motor m, int msec) {
   m.stop();
 }
 
-void LaundroMat(vex::motor* mlist, int len, int msec) {
-  for (int i = 0; i < len; i++) {
-    mlist[i].setVelocity(100, velocityUnits::pct);
-    mlist[i].spin(directionType::fwd);
+void LaundroControlHold(vex::motor* mlist, int len, int velocity_percent, vex::directionType direction) {
+  for(int i = 0; i < len; i++) {
+    mlist[i].setVelocity(velocity_percent, velocityUnits::pct);
+    mlist[i].spin(direction);
+  }
+
+  while (1 == 1) {
+    
+  }
+}
+
+void LaundroHold(vex::motor* mlist, int len, int msec, int velocity_percent, vex::directionType direction) {
+  for(int i = 0; i < len; i++) {
+    mlist[i].setVelocity(velocity_percent, velocityUnits::pct);
+    mlist[i].spin(direction);
   }
 
   task::sleep(msec);
+
+  for(int i = 0; i < len; i++) {
+    mlist[i].stop(brakeType::hold);
+  }
+}
+
+void LaundroMat(vex::motor* mlist, int len, int msec, int velocity_percent, vex::directionType direction) {
+  for (int i = 0; i < len; i++) {
+    mlist[i].setVelocity(velocity_percent, velocityUnits::pct);
+    mlist[i].spin(direction);
+  }
+
+  task::sleep(msec);
+
+  for (int i = 0; i < len; i++) {
+    mlist[i].stop();
+  }
+}
+
+void LaudroLimit(vex::motor *mlist, int len, vex::limit lswitch, int velocity_percent, vex::directionType direction) {
+  for (int i = 0; i < len; i++) {
+    mlist[i].setVelocity(velocity_percent, velocityUnits::pct);
+    mlist[i].spin(direction);
+  }
+
+  while (1 == 1) {
+    if (lswitch.pressing()) {
+      break;
+    }
+  }
 
   for (int i = 0; i < len; i++) {
     mlist[i].stop();
