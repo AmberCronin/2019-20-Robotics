@@ -77,19 +77,21 @@ int main() {
     }
     r2Press = ctrl.ButtonR2.pressing();
 
-    if(ctrl.ButtonL2.pressing() && !l1Press) {
+    if(ctrl.ButtonL1.pressing() && !l1Press) {
       claw.setVelocity(100, velocityUnits::pct);
       claw.spin(directionType::fwd);
     } else if(!ctrl.ButtonL1.pressing() && l1Press) {
-      claw.stop(brakeType::hold);
+      claw.stop();
     }
-    
+    l1Press = ctrl.ButtonL1.pressing();
+
     if(ctrl.ButtonL2.pressing() && !l2Press) {
       claw.setVelocity(100, velocityUnits::pct);
       claw.spin(directionType::rev);
     } else if(!ctrl.ButtonL2.pressing() && l2Press) {
-      claw.stop(brakeType::hold);
+      claw.stop();
     }
+    l2Press = ctrl.ButtonL2.pressing();
 
     task::sleep(10);
   }
