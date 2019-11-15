@@ -15,8 +15,10 @@ using namespace vex;
 vex::brain       Brain;
 
 // define your global instances of motors and other devices here
-vex::motor      LMotor(vex::PORT1, false);
-vex::motor      RMotor(vex::PORT2, true);
+vex::motor      LBMotor(vex::PORT1, false);
+vex::motor      LFMotor(vex::PORT6, false);
+vex::motor      RBMotor(vex::PORT2, true);
+vex::motor      RFMotor(vex::PORT7, true);
 
 vex::motor* arm_motors;
 int arm_motors_len = 2;
@@ -38,8 +40,10 @@ void initArmMotorList() {
 void driveArcade(vex::controller::axis f, vex::controller::axis r) {
   double fwd = f.position();
   double rot = r.position();
-  LMotor.spin(directionType::fwd, fwd + rot, velocityUnits::pct);
-  RMotor.spin(directionType::fwd, -(fwd - rot), velocityUnits::pct);
+  LBMotor.spin(directionType::fwd, fwd + rot, velocityUnits::pct);
+  LFMotor.spin(directionType::fwd, fwd + rot, velocityUnits::pct);
+  RBMotor.spin(directionType::fwd, -(fwd - rot), velocityUnits::pct);
+  RFMotor.spin(directionType::fwd, -(fwd - rot), velocityUnits::pct);
 }
 
 int main() {
