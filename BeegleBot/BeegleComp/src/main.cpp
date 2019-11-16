@@ -51,6 +51,13 @@ void goRobit(int time)
   task::sleep(time);
   stopDrive();
 }
+void revRobit(int time)
+{
+  spinLeft(-100);
+  spinRight(-100);
+  task::sleep(time);
+  stopDrive();
+}
 
 
 vex::motor* AllocMotorList(vex::motor* list, int size) {
@@ -98,6 +105,7 @@ void pre_auton( void ) {
 void autonomous( void ) {
     initArmMotorList();
   goRobit(3000);
+  revRobit(2000);
 }
 
 
