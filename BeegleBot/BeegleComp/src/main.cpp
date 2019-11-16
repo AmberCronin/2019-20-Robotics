@@ -29,8 +29,32 @@ vex::motor      claw(vex::PORT5, false);
 vex::controller ctrl(vex::controllerType::primary);
 
 
+void spinLeft(double pct)
+{
+  LBMotor.spin(directionType::fwd, pct, velocityUnits::pct);
+  LFMotor.spin(directionType::fwd, pct, velocityUnits::pct);
+}
+void spinRight(double pct)
+{
+  RBMotor.spin(directionType::fwd, pct, velocityUnits::pct);
+  RFMotor.spin(directionType::fwd, pct, velocityUnits::pct);
+}
+void stopDrive()
+{
+  spinLeft(0);
+  spinRight(0);
+}
+void goRobit(int time)
+{
+  spinLeft(100);
+  spinRight(100);
+  task::sleep(time);
+  stopDrive();
+}
+
+
 vex::motor* AllocMotorList(vex::motor* list, int size) {
-  vex::motor* tmotor_list = (vex::motor*)malloc(sizeof(vex::motor*) * size);
+  vex::motor* tmotor_list = (vex::motor*)malloc(sizeof(vex::motor) * size);
   return tmotor_list;
 }
 void initArmMotorList() {
@@ -48,6 +72,7 @@ void driveArcade(vex::controller::axis f, vex::controller::axis r) {
   RFMotor.spin(directionType::fwd, -(fwd - rot), velocityUnits::pct);
 }
 
+/*
 bool checkInit()
 {
   try
@@ -63,6 +88,7 @@ bool checkInit()
   }
   return true;
 }
+*/
 
 void pre_auton( void ) {
   initArmMotorList();
@@ -70,18 +96,13 @@ void pre_auton( void ) {
 
 
 void autonomous( void ) {
-  if(!checkInit())
-  {
     initArmMotorList();
-  }
+  goRobit(3000);
 }
 
 
 void usercontrol( void ) {
-  if(!checkInit())
-  {
     initArmMotorList();
-  }
 
   // User control code here, inside the loop
   bool r1Press = false;

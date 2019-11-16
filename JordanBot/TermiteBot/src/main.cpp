@@ -27,7 +27,7 @@ int claw_len = 2;
 vex::controller ctrl(vex::controllerType::primary);
 
 vex::motor* AllocMotorList(vex::motor* list, int size) {
-  vex::motor* tmotor_list = (vex::motor*)malloc(sizeof(vex::motor*) * size);
+  vex::motor* tmotor_list = (vex::motor*)malloc(sizeof(vex::motor) * size);
   return tmotor_list;
 }
 void initArmMotorList() {
@@ -48,21 +48,25 @@ void driveArcade(vex::controller::axis f, vex::controller::axis r) {
   RMotor.spin(directionType::fwd, -(fwd - rot), velocityUnits::pct);
 }
 
+void driveTank(vex::controller::axis l, vex::controller::axis r) {
+  double lpct = l.position();
+  double rpct = r.position();
+  LMotor.spin(directionType::fwd, lpct, velocityUnits::pct);
+  RMotor.spin(directionType::fwd, rpct, velocityUnits::pct);
+}
+
 int main() {
   initArmMotorList();
   initClawMotorList();
+
 
   bool r1Press = false;
   bool r2Press = false;
   bool l1Press = false;
   bool l2Press = false;
-
-  for(int i = 0; i < arm_motors_len; i++) {
-    arm_motors[i].resetRotation();
-  }
-
-  while(1) {
-    driveArcade(ctrl.Axis4, ctrl.Axis3);
+  while (1) {
+    //driveArcade(ctrl.Axis4, ctrl.Axis3);
+    driveTank(ctrl.Axis3, ctrl.Axis2);
 
     if(ctrl.ButtonL2.pressing() && !l2Press) {
       for(int i = 0; i < arm_motors_len; i++) {
