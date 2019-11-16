@@ -96,7 +96,7 @@ void usercontrol( void ) {
 
     if(ctrl.ButtonL2.pressing() && !l2Press) {
       for(int i = 0; i < arm_motors_len; i++) {
-        arm_motors[i].setVelocity(100, velocityUnits::pct);
+        arm_motors[i].setVelocity(50, velocityUnits::pct);
         arm_motors[i].spin(directionType::fwd);
       }
     } else if (!ctrl.ButtonL2.pressing() && l2Press) {
@@ -158,6 +158,5 @@ int main() {
     //Prevent main from exiting with an infinite loop.                        
     while(1) {
       vex::task::sleep(100);//Sleep the task for a short amount of time to prevent wasted resources.
-    }    
-       
+    }
 }

@@ -57,12 +57,16 @@ int main() {
   bool l1Press = false;
   bool l2Press = false;
 
+  for(int i = 0; i < arm_motors_len; i++) {
+    arm_motors[i].resetRotation();
+  }
+
   while(1) {
     driveArcade(ctrl.Axis4, ctrl.Axis3);
 
     if(ctrl.ButtonL2.pressing() && !l2Press) {
       for(int i = 0; i < arm_motors_len; i++) {
-        arm_motors[i].setVelocity(100, velocityUnits::pct);
+        arm_motors[i].setVelocity(50, velocityUnits::pct);
         arm_motors[i].spin(directionType::fwd);
       }
     } else if (!ctrl.ButtonL2.pressing() && l2Press) {
