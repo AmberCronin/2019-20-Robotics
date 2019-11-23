@@ -1,3 +1,5 @@
+//Benjamin Ahn
+
 #include "vex.h"
 
 using namespace vex;
@@ -18,14 +20,16 @@ void ReverseMotor(vex::motor m, int msec) {
   m.stop();
 }
 
-void LaundroControlHold(vex::motor* mlist, int len, int velocity_percent, vex::directionType direction) {
-  for(int i = 0; i < len; i++) {
-    mlist[i].setVelocity(velocity_percent, velocityUnits::pct);
-    mlist[i].spin(direction);
+//resets rotation before rotating. 
+void LaundroControlHold(vex::motor* mlist, int len, int rot, rotationUnits unts, int velocity_percent, velocityUnits v_unts) {
+  for(int i = 0; i < len - 1; i++) {
+    mlist[i].resetRotation();
+    mlist[i].rotateFor(rot, unts, velocity_percent, v_unts, false);
   }
-
-  while (1 == 1) {
-    
+  mlist[len - 1].rotateFor(rot, unts, velocity_percent, v_unts);
+  
+  for(int i = 0; i < len; i++){
+    mlist[i].stop(brakeType :: hold);
   }
 }
 
