@@ -1,5 +1,3 @@
-//Benjamin Ahn
-
 #include "vex.h"
 
 using namespace vex;

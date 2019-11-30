@@ -26,11 +26,11 @@ vex::motor* AllocMotorList(vex::motor* list, int size) {
 
 void initDriveMotorList()
 {
-  drive_motors = AllocMotorList(drive_motors, 4);
+  drive_motors = AllocMotorList(drive_motors, 5);
   drive_motors[0] = vex::motor(PORT1, false);
-  drive_motors[1] = vex::motor(PORT2, false);
-  drive_motors[2] = vex::motor(PORT3, false);
-  drive_motors[3] = vex::motor(PORT4, false);
+  drive_motors[1] = vex::motor(PORT2, true);
+  drive_motors[2] = vex::motor(PORT6, false);
+  drive_motors[3] = vex::motor(PORT7, true);
 }
 void initArmMotorList()
 {
@@ -41,7 +41,7 @@ void initArmMotorList()
 
 int main() {
   initDriveMotorList();
-  LaudroLimit(drive_motors, 4, lim1, 100, directionType::fwd);
-  HandleInputs(ctrl, arm_motors, 2);
+  //LaudroLimit(drive_motors, 4, lim1, 100, directionType::fwd);
+  HandleDriveInputs(ctrl, drive_motors, 4);
   return 0;
 }
