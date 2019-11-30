@@ -1,4 +1,5 @@
 #include "vex.h"
+#include "esotils.h"
 
 using namespace vex;
 
