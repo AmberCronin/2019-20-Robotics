@@ -110,6 +110,7 @@ void pre_auton( void ) {
 
 void autonomous( void ) {
   initArmMotorList();
+  initClawMotorList();
   goRobit(3000);
   revRobit(2000);
 }
@@ -135,7 +136,7 @@ void usercontrol( void ) {
       }
     } else if (!ctrl.ButtonR1.pressing() && r1Press) {
       for(int i = 0; i < arm_motors_len; i++) {
-       arm_motors[i].stop(brakeType::hold);
+       arm_motors[i].stop();
       }
     }
     r1Press = ctrl.ButtonR1.pressing();
@@ -147,7 +148,7 @@ void usercontrol( void ) {
       }
     } else if (!ctrl.ButtonR2.pressing() && r2Press) {
       for(int i = 0; i < arm_motors_len; i++) {
-       arm_motors[i].stop(brakeType::hold);
+       arm_motors[i].stop();
       }
     }
     r2Press = ctrl.ButtonR2.pressing();
