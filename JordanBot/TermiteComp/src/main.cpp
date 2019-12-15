@@ -66,6 +66,12 @@ void auton() {
   LMotor.stop();
   RMotor.stop();
   */
+
+  claw_motors[0].spin(directionType::fwd, -100, velocityUnits::pct);
+  claw_motors[1].spin(directionType::fwd, -100, velocityUnits::pct);
+  task::sleep(1000);
+  claw_motors[0].stop();
+  claw_motors[1].stop();
 }
 
 /*
@@ -127,7 +133,7 @@ void usercontrol( void ) {
 
     if(ctrl.ButtonL1.pressing() && !l1Press) {
       for(int i = 0; i < arm_motors_len; i++) {
-        arm_motors[i].setVelocity(100, velocityUnits::pct);
+        arm_motors[i].setVelocity(50, velocityUnits::pct);
         arm_motors[i].spin(directionType::rev);
       }
     } else if (!ctrl.ButtonL1.pressing() && l1Press) {
@@ -139,7 +145,7 @@ void usercontrol( void ) {
 
     if(ctrl.ButtonR2.pressing() && !r2Press) {
       claw_motors[0].setVelocity(50, velocityUnits::pct);
-      claw_motors[1].setVelocity(100, velocityUnits::pct);
+      claw_motors[1].setVelocity(50, velocityUnits::pct);
       claw_motors[0].spin(directionType::fwd);
       claw_motors[1].spin(directionType::fwd);
     } else if(!ctrl.ButtonR2.pressing() && r2Press) {
@@ -150,7 +156,7 @@ void usercontrol( void ) {
 
     if(ctrl.ButtonR1.pressing() && !r1Press) {
       claw_motors[0].setVelocity(50, velocityUnits::pct);
-      claw_motors[1].setVelocity(100, velocityUnits::pct);
+      claw_motors[1].setVelocity(50, velocityUnits::pct);
       claw_motors[0].spin(directionType::rev);
       claw_motors[1].spin(directionType::rev);
     } else if(!ctrl.ButtonR1.pressing() && r1Press) {
