@@ -16,13 +16,13 @@ vex::brain       Brain;
 vex::competition Competition;
 
 // define your global instances of motors and other devices here
-vex::motor      LMotor(vex::PORT16, false);
-vex::motor      RMotor(vex::PORT20, true);
+vex::motor      LMotor(vex::PORT2, false);
+vex::motor      RMotor(vex::PORT1, true);
 
-vex::motor* arm_motors;
+vex::motor* arm_motors; //towering
 int arm_motors_len = 2;
 
-vex::motor* claw_motors;
+vex::motor* claw_motors; //intake
 int claw_len = 2;
 
 vex::controller ctrl(vex::controllerType::primary);
@@ -33,20 +33,20 @@ vex::motor* AllocMotorList(vex::motor* list, int size) {
 }
 void initArmMotorList() {
   arm_motors = AllocMotorList(arm_motors, arm_motors_len);
-  arm_motors[0] = vex::motor(PORT11, false); //left side forward
-  arm_motors[1] = vex::motor(PORT12, true); //right side reversed
+  arm_motors[0] = vex::motor(PORT3, false); //left side forward
+  arm_motors[1] = vex::motor(PORT4, true); //right side reversed
 }
 void initClawMotorList() {
   claw_motors = AllocMotorList(claw_motors, claw_len);
   claw_motors[0] = vex::motor(PORT5, false);
-  claw_motors[1] = vex::motor(PORT2, false);
+  claw_motors[1] = vex::motor(PORT6, true);
 }
 
 void driveArcade(vex::controller::axis f, vex::controller::axis r) {
   double fwd = f.position();
   double rot = r.position();
   LMotor.spin(directionType::fwd, fwd + rot, velocityUnits::pct);
-  RMotor.spin(directionType::fwd, -(fwd - rot), velocityUnits::pct);
+  RMotor.spin(directionType::rev, (fwd - rot), velocityUnits::pct);
 }
 void driveTank(vex::controller::axis l, vex::controller::axis r) {
   double lpct = l.position();
@@ -56,6 +56,7 @@ void driveTank(vex::controller::axis l, vex::controller::axis r) {
 }
 
 void auton() {
+  /*
   LMotor.spin(directionType::rev, 100, velocityUnits::pct);
   RMotor.spin(directionType::rev, 100, velocityUnits::pct);
   task::sleep(3000);
@@ -64,6 +65,7 @@ void auton() {
   task::sleep(2000);
   LMotor.stop();
   RMotor.stop();
+  */
 }
 
 /*
@@ -108,8 +110,8 @@ void usercontrol( void ) {
   bool l1Press = false;
   bool l2Press = false;
   while (1) {
-    //driveArcade(ctrl.Axis4, ctrl.Axis3);
-    driveTank(ctrl.Axis3, ctrl.Axis2);
+    driveArcade(ctrl.Axis4, ctrl.Axis3);
+    //driveTank(ctrl.Axis3, ctrl.Axis2);
 
     if(ctrl.ButtonL2.pressing() && !l2Press) {
       for(int i = 0; i < arm_motors_len; i++) {
