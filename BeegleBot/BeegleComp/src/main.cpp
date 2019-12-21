@@ -7,6 +7,7 @@
 /*                                                                            */
 /*----------------------------------------------------------------------------*/
 #include "vex.h"
+#include <esotils.h>
 
 using namespace vex;
 
@@ -126,9 +127,12 @@ void usercontrol( void ) {
   bool l1Press = false;
   bool l2Press = false;
   
+  double arm_velocity = 0.0;
+  double diff = 2;
+
   while (1) {
     driveArcade(ctrl.Axis1, ctrl.Axis2);
-
+  /*
     if(ctrl.ButtonR1.pressing() && !r1Press) {
       for(int i = 0; i < arm_motors_len; i++) {
         arm_motors[i].setVelocity(100, velocityUnits::pct);
@@ -140,19 +144,67 @@ void usercontrol( void ) {
       }
     }
     r1Press = ctrl.ButtonR1.pressing();
+    */
 
-    if(ctrl.ButtonR2.pressing() && !r2Press) {
-      for(int i = 0; i < arm_motors_len; i++) {
-        arm_motors[i].setVelocity(100, velocityUnits::pct);
-        arm_motors[i].spin(directionType::rev);
+    if(ctrl.ButtonR1.pressing()) {
+
+      if(arm_velocity - diff < -100)
+      {
+        arm_velocity = -100;
       }
-    } else if (!ctrl.ButtonR2.pressing() && r2Press) {
+      else {
+        arm_velocity -= diff;
+      }
+    }
+    else if(ctrl.ButtonR2.pressing()) {
+      if(arm_velocity + diff > 100)
+      {
+        arm_velocity = 100;
+      }
+      else {
+        arm_velocity += diff;
+      }
+      
+    }
+    else {
+      if(sign(arm_velocity) == 1)
+      {
+        if(arm_velocity - diff < 0)
+        {
+          arm_velocity = 0;
+        }
+        else {
+          arm_velocity -= diff;
+        }
+      }
+      else if(sign(arm_velocity) == -1)
+      {
+        if(arm_velocity + diff > 0)
+        {
+          arm_velocity = 0;
+        }
+        else {
+          arm_velocity += diff;
+        }
+      }
+    }
+    for (int i = 0; i < arm_motors_len; i++) {
+      // big increase here
+      arm_motors[i].setVelocity(arm_velocity, velocityUnits::pct);
+      arm_motors[i].spin(directionType::fwd);
+    }
+  /*
+    for (int i = 0; i < arm_motors_len; i++) {
+        // decay here
+        for (arm_velocity; arm_velocity <= 0; arm_velocity-=0.02) {
+          arm_motors[i].setVelocity(arm_velocity, velocityUnits::pct);
+          arm_motors[i].spin(directionType::fwd);
+        }
+      }
       for(int i = 0; i < arm_motors_len; i++) {
        arm_motors[i].stop();
       }
-    }
-    r2Press = ctrl.ButtonR2.pressing();
-
+*/
     if(ctrl.ButtonL1.pressing() && !l1Press) {
       for(int i = 0; i < claw_motors_len; i++) {
         claw_motors[i].setVelocity(100, velocityUnits::pct);
