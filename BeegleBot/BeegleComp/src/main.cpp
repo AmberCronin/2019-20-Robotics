@@ -11,6 +11,8 @@
 
 using namespace vex;
 
+#define DT 10  // this is the constant we use for acceleration
+
 // A global instance of vex::brain used for printing to the V5 brain screen
 vex::brain       Brain;
 // A global instance of vex::competition
@@ -28,7 +30,21 @@ int arm_motors_len = 2;
 vex::motor* claw_motors;
 int claw_motors_len = 2;
 
+double arm_motor_velocity;
+double arm_motor_velocity_goal;
+
 vex::controller ctrl(vex::controllerType::primary);
+
+double Approach(double current, double goal, double dt) {
+    double difference = goal - current;
+
+    if (difference > dt) {
+        return current + dt;
+    } if (difference < -dt) {
+        return current-dt;
+    }
+    return goal;
+}
 
 void moveClaw(double pct)
 {
@@ -118,24 +134,6 @@ void driveArcade(vex::controller::axis f, vex::controller::axis r) {
   RFMotor.spin(directionType::fwd, -(fwd - rot), velocityUnits::pct);
 }
 
-/*
-bool checkInit()
-{
-  try
-  {
-    for(int i = 0; i < arm_motors_len; i++)
-    {
-      arm_motors[i].isSpinning();
-    }
-  }
-  catch(int e)
-  {
-    return false;
-  }
-  return true;
-}
-*/
-
 void pre_auton( void ) {
   initArmMotorList();
   initClawMotorList();
@@ -162,6 +160,29 @@ void autonomous( void ) {
   auton();
 }
 
+/*
+void Character::Update(double dt) {
+    // ramp up velocity
+    velocity_x = Approach(velocity_x, velocity_x_goal, dt*CHARACTER_DT_MULTIPLIER);
+    velocity_y = Approach(velocity_y, velocity_y_goal, dt*CHARACTER_DT_MULTIPLIER);
+
+    // update position
+    player_world_pos.x += velocity_x;
+    player_world_pos.y += velocity_y;
+
+}
+*/
+
+void UpdateArmVelocity(vex::motor* arm_motors_, double dt, directionType direction) {
+    // ramp up velocity
+    arm_motor_velocity = Approach(arm_motor_velocity, arm_motor_velocity_goal, dt);
+
+    // set motor velocity
+    for (int i = 0; i < arm_motors_len; i++) {
+      arm_motors_[i].setVelocity(arm_motor_velocity, velocityUnits::pct);
+      arm_motors_[i].spin(direction);
+    }
+}
 
 void usercontrol( void ) {
     initArmMotorList();
@@ -173,90 +194,29 @@ void usercontrol( void ) {
   bool l1Press = false;
   bool l2Press = false;
   
-  double arm_velocity = 0.0;
-  double diff = 5;
+  directionType direction;
 
   while (1) {
     driveArcade(ctrl.Axis1, ctrl.Axis2);
-  /*
-    if(ctrl.ButtonR1.pressing() && !r1Press) {
-      for(int i = 0; i < arm_motors_len; i++) {
-        arm_motors[i].setVelocity(100, velocityUnits::pct);
-        arm_motors[i].spin(directionType::fwd);
-      }
-    } else if (!ctrl.ButtonR1.pressing() && r1Press) {
-      for(int i = 0; i < arm_motors_len; i++) {
-       arm_motors[i].stop(brakeType::hold);
-      }
-    }
-    r1Press = ctrl.ButtonR1.pressing();
-    */
+    // ARM MOTOR STUFF
+
 
     if(ctrl.ButtonR1.pressing()) {
-
-      if(arm_velocity - diff < -100)
-      {
-        arm_velocity = -100;
-      }
-      else {
-        arm_velocity -= diff;
-      }
-    }
-    else if(ctrl.ButtonR2.pressing()) {
-      if(arm_velocity + diff > 100)
-      {
-        arm_velocity = 100;
-      }
-      else {
-        arm_velocity += diff;
-      }
-      
-    }
-    else {
-      if(sign(arm_velocity) == 1)
-      {
-        if(arm_velocity - diff < 0)
-        {
-          arm_velocity = 0;
-        }
-        else {
-          arm_velocity -= diff;
-        }
-      }
-      else if(sign(arm_velocity) == -1)
-      {
-        if(arm_velocity + diff > 0)
-        {
-          arm_velocity = 0;
-        }
-        else {
-          arm_velocity += diff;
-        }
-      }
-    }
-    for (int i = 0; i < arm_motors_len; i++) {
-      // big increase here
-      if(arm_velocity != 0)
-      {
-        arm_motors[i].setVelocity(arm_velocity, velocityUnits::pct);
-        arm_motors[i].spin(directionType::fwd);
-      }
-      else {
+      arm_motor_velocity_goal = -100.0;
+      direction = directionType::fwd;
+    } else if(ctrl.ButtonR2.pressing()) {
+      arm_motor_velocity_goal = -100.0;
+      direction = directionType::rev;
+    } else {
+      arm_motor_velocity_goal = 0.0;
+      for (int i = 0; i < arm_motors_len; i++) {
         arm_motors[i].stop(brakeType::hold);
       }
     }
-  /*
-    for (int i = 0; i < arm_motors_len; i++) {
-        // decay here
-        for (arm_velocity; arm_velocity <= 0; arm_velocity-=0.02) {
-          arm_motors[i].setVelocity(arm_velocity, velocityUnits::pct);
-          arm_motors[i].spin(directionType::fwd);
-        }
-      }
-      for(int i = 0; i < arm_motors_len; i++) {
-       arm_motors[i].stop(brakeType::hold);
-      }
-*/
+
+    UpdateArmVelocity(arm_motors, DT, direction);
+
+    // DON'T DELETE! CLAW MOTOR CODE STUFF HERE
     if(ctrl.ButtonL1.pressing() && !l1Press) {
       for(int i = 0; i < claw_motors_len; i++) {
         claw_motors[i].setVelocity(100, velocityUnits::pct);
