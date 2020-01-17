@@ -136,18 +136,18 @@ vex::motor* AllocMotorList(vex::motor* list, int size) {
 }
 void initArmMotorList() {
   lower_arm = AllocMotorList(lower_arm, lower_arm_len);
-  lower_arm[0] = vex::motor(PORT13, false); //left side forward
-  lower_arm[1] = vex::motor(PORT14, true); //right side reversed
+  lower_arm[0] = vex::motor(PORT13, true); //left side forward
+  lower_arm[1] = vex::motor(PORT14, false); //right side reversed
 
   upper_arm = AllocMotorList(upper_arm, upper_arm_len);
-  upper_arm[0] = vex::motor(PORT11, false);
-  upper_arm[1] = vex::motor(PORT12, true);
+  upper_arm[0] = vex::motor(PORT11, true);
+  upper_arm[1] = vex::motor(PORT12, false);
 }
 
 void initClawMotorList() {
   claw_motors = AllocMotorList(claw_motors, claw_motors_len);
-  claw_motors[0] = vex::motor(PORT8, false);
-  claw_motors[1] = vex::motor(PORT7, true);
+  claw_motors[0] = vex::motor(PORT19, true);
+  claw_motors[1] = vex::motor(PORT20, false);
 }
 
 /*
@@ -218,6 +218,7 @@ void usercontrol( void ) {
   while (1) {
     driveTank(ctrl.Axis3, ctrl.Axis2);
 
+
     if(ctrl.ButtonR1.pressing()) {
       upper_motor_velocity_goal = -100.0;
       upperDir = directionType::fwd;
@@ -248,6 +249,7 @@ void usercontrol( void ) {
     }
 
     UpdateLowerVelocity(lower_arm, DT, lowerDir);
+
 
 
 
