@@ -41,6 +41,12 @@ double lower_motor_velocity_goal;
 double upper_motor_velocity;
 double upper_motor_velocity_goal;
 
+double l_drive_velocity;
+double l_drive_velocity_goal;
+
+double r_drive_velocity;
+double r_drive_velocity_goal;
+
 
 vex::controller ctrl(vex::controllerType::primary);
 
@@ -184,11 +190,24 @@ void autonomous( void ) {
 bool l1Press = false;
 bool l2Press = false;
 
-
+directionType rDdt;
+directionType lDdt;
 
 directionType upperDir;
 directionType lowerDir;
 
+void UpdateDriveVel(vex::controller::axis l, vex::controller::axis r, double dt) {
+  l_drive_velocity_goal = l.position();
+  r_drive_velocity_goal = r.position();
+
+  l_drive_velocity = Approach(l_drive_velocity, l_drive_velocity_goal, dt);
+  r_drive_velocity = Approach(r_drive_velocity, r_drive_velocity_goal, dt);
+
+  LMotor.setVelocity(l_drive_velocity, velocityUnits::pct);
+  LMotor.spin(directionType::fwd);
+  RMotor.setVelocity(r_drive_velocity, velocityUnits::pct);
+  RMotor.spin(directionType::fwd);
+}
 void UpdateUpperVelocity(vex::motor* arm_motors_, double dt, directionType direction) {
     // ramp up velocity
     upper_motor_velocity = Approach(upper_motor_velocity, upper_motor_velocity_goal, dt);
@@ -216,8 +235,8 @@ void usercontrol( void ) {
   initClawMotorList();
 
   while (1) {
-    driveTank(ctrl.Axis3, ctrl.Axis2);
-
+    //driveTank(ctrl.Axis3, ctrl.Axis2);
+    UpdateDriveVel(ctrl.Axis3, ctrl.Axis2, DT);
 
     if(ctrl.ButtonR1.pressing()) {
       upper_motor_velocity_goal = -100.0;
