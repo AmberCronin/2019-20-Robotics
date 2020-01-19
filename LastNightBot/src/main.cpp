@@ -10,7 +10,8 @@
 
 using namespace vex;
 
-
+//possibly add a new DT var to account for different usages
+//#define DDT 20 //for the drive (Drive DT)
 #define DT 10
 
 // A global instance of vex::brain used for printing to the V5 brain screen
@@ -24,6 +25,7 @@ vex::motor    LMotor(vex::PORT2, false);
 vex::motor    RMotor(vex::PORT1, true);
 
 
+//arm definitions
 vex::motor* lower_arm;
 int lower_arm_len = 2;
 
@@ -35,6 +37,7 @@ vex::motor* claw_motors;
 int claw_motors_len = 2;
 
 
+//velocity setpoints
 double lower_motor_velocity;
 double lower_motor_velocity_goal;
 
@@ -48,8 +51,11 @@ double r_drive_velocity;
 double r_drive_velocity_goal;
 
 
+
 vex::controller ctrl(vex::controllerType::primary);
 
+
+//Function for working with acceleration
 double Approach(double current, double goal, double dt) {
     double difference = goal - current;
 
@@ -61,6 +67,8 @@ double Approach(double current, double goal, double dt) {
     return goal;
 }
 
+
+// BASIC MOVEMENT FUNCTIONS
 void moveClaw(double pct)
 {
   for(int i = 0; i < claw_motors_len; i++)
@@ -90,6 +98,9 @@ void spinRight(double pct)
 {
   RMotor.spin(directionType::fwd, pct, velocityUnits::pct);
 }
+
+
+//ADVANCED MOVEMENT FUNCTIONS
 void stopDrive()
 {
   spinLeft(0);
@@ -137,10 +148,12 @@ void goClaw(double pwr, int time)
 }
 
 
+//LIST INITIALLIZATIONS
 vex::motor* AllocMotorList(vex::motor* list, int size) {
   vex::motor* tmotor_list = (vex::motor*)malloc(sizeof(vex::motor) * size);
   return tmotor_list;
 }
+
 void initArmMotorList() {
   lower_arm = AllocMotorList(lower_arm, lower_arm_len);
   lower_arm[0] = vex::motor(PORT13, true); //left side forward
@@ -150,7 +163,6 @@ void initArmMotorList() {
   upper_arm[0] = vex::motor(PORT11, true);
   upper_arm[1] = vex::motor(PORT12, false);
 }
-
 void initClawMotorList() {
   claw_motors = AllocMotorList(claw_motors, claw_motors_len);
   claw_motors[0] = vex::motor(PORT19, true);
@@ -158,13 +170,13 @@ void initClawMotorList() {
 }
 
 
+//DRIVE FUNCTIONS
 void driveArcade(vex::controller::axis f, vex::controller::axis r) {
   double fwd = f.position();
   double rot = r.position();
   LMotor.spin(directionType::fwd, fwd + rot, velocityUnits::pct);
   RMotor.spin(directionType::fwd, fwd - rot, velocityUnits::pct);
 }
-
 void driveTank(vex::controller::axis l, vex::controller::axis r) {
   double ld = l.position(); //gets the true position of the stick in this axis
   double rd = r.position();
@@ -172,6 +184,10 @@ void driveTank(vex::controller::axis l, vex::controller::axis r) {
   RMotor.spin(directionType::fwd, rd, velocityUnits::pct);
 }
 
+
+
+
+//COMPETITION FUNCTIONS
 void pre_auton( void ) {
   initArmMotorList();
   initClawMotorList();
@@ -259,6 +275,7 @@ void autonomous( void ) {
 }
 
 
+//DRIVER CONTROL VARIABLES
 bool l1Press = false;
 bool l2Press = false;
 
@@ -268,6 +285,8 @@ directionType lDdt;
 directionType upperDir;
 directionType lowerDir;
 
+
+//CONTROL FUNCTIONS
 void UpdateDriveVel(vex::controller::axis l, vex::controller::axis r, double dt) {
   l_drive_velocity_goal = l.position();
   r_drive_velocity_goal = r.position();
@@ -322,6 +341,8 @@ void UpdateLowerVelocity(vex::motor* arm_motors_, double dt, directionType direc
       arm_motors_[i].spin(direction);
     }
 }
+
+
 
 void usercontrol( void ) {
   // User control code here, inside the loop
