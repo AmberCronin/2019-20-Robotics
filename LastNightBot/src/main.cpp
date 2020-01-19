@@ -156,18 +156,18 @@ void initClawMotorList() {
   claw_motors[1] = vex::motor(PORT20, false);
 }
 
-/*
+
 void driveArcade(vex::controller::axis f, vex::controller::axis r) {
   double fwd = f.position();
   double rot = r.position();
   LMotor.spin(directionType::fwd, fwd + rot, velocityUnits::pct);
   RMotor.spin(directionType::fwd, fwd - rot, velocityUnits::pct);
 }
-*/
+
 void driveTank(vex::controller::axis l, vex::controller::axis r) {
-  double ld = l.position();
+  double ld = l.position(); //gets the true position of the stick in this axis
   double rd = r.position();
-  LMotor.spin(directionType::fwd, ld, velocityUnits::pct);
+  LMotor.spin(directionType::fwd, ld, velocityUnits::pct); //spins the motor in the forward direction at speed ld
   RMotor.spin(directionType::fwd, rd, velocityUnits::pct);
 }
 
@@ -176,14 +176,85 @@ void pre_auton( void ) {
   initClawMotorList();
 }
 
-void auton() {
+void auton(bool test) {
+  if(!test) {
+    // production code here
+    revRobit(2333);
+    goRobit(1000);
+    
+    // end production code
+  } else {
+    // write test code 
 
+    /*BLOCK TWO*/
+    // push the block back and then move forward
+    revRobit(2333);
+    goRobit(1000);
+    
+    /*BLOCK ONE*/
+    // rotate 90 degrees
+    goRobit(-100, 100, 500);
+
+    // pinch the claw to grab the cube
+    goClaw(100, 300);
+
+    // raise the arm thing
+    goUpper(100, 200);
+
+    // rotate another 90 degrees
+    goRobit(-100, 100, 500);
+
+    // move robot into cube dropping position
+    goRobit(1000);
+
+    // release the claw
+    goClaw(-100, 300);
+
+    // back up and reset claw
+    revRobit(2000);
+    goUpper(-100, 200);
+
+    /*BLOCK THREE*/
+    // rotate 90 degrees
+    goRobit(100, -100, 500);
+
+    // go forward
+    goRobit(500);
+
+    // pinch the claw
+    goClaw(100, 300);
+
+
+    // rotate 90 degrees back
+    goRobit(100, -100, 500);
+
+    // drive forward
+    goRobit(2000);
+
+    // raise arm
+    goUpper(100, 1000);
+
+    //move forward a sliight bit more
+    goRobit(200);
+
+    // drop the cube
+    goClaw(-100, 300);
+
+    // take it back now y'all
+    revRobit(1000);
+
+    //reset
+    goUpper(-100, 500);
+
+    // hI I'm maTHmEw ansd i cannae teyp
+    // end test code
+  }
 }
 
 void autonomous( void ) {
   initArmMotorList();
   initClawMotorList();
-
+  auton(false);  // true will run test auton and false will run actual auton
 }
 
 
@@ -236,7 +307,8 @@ void usercontrol( void ) {
 
   while (1) {
     //driveTank(ctrl.Axis3, ctrl.Axis2);
-    UpdateDriveVel(ctrl.Axis3, ctrl.Axis2, DT);
+    //UpdateDriveVel(ctrl.Axis3, ctrl.Axis2, DT);
+    driveArcade(ctrl.Axis3, ctrl.Axis4);
 
     if(ctrl.ButtonR1.pressing()) {
       upper_motor_velocity_goal = -100.0;
@@ -273,29 +345,29 @@ void usercontrol( void ) {
 
 
     // DON'T DELETE! CLAW MOTOR CODE STUFF HERE
-    if(ctrl.ButtonX.pressing() && !l1Press) {
+    if(ctrl.ButtonB.pressing() && !l1Press) {
       for(int i = 0; i < claw_motors_len; i++) {
         claw_motors[i].setVelocity(100, velocityUnits::pct);
         claw_motors[i].spin(directionType::fwd);
       }
-    } else if(!ctrl.ButtonX.pressing() && l1Press) {
+    } else if(!ctrl.ButtonB.pressing() && l1Press) {
       for(int i = 0; i < claw_motors_len; i++) {
         claw_motors[i].stop(brakeType::brake);
       }
     }
-    l1Press = ctrl.ButtonX.pressing();
+    l1Press = ctrl.ButtonB.pressing();
 
-    if(ctrl.ButtonB.pressing() && !l2Press) {
+    if(ctrl.ButtonX.pressing() && !l2Press) {
       for(int i = 0; i < claw_motors_len; i++) {
         claw_motors[i].setVelocity(100, velocityUnits::pct);
         claw_motors[i].spin(directionType::rev);
       }
-    } else if(!ctrl.ButtonB.pressing() && l2Press) {
+    } else if(!ctrl.ButtonX.pressing() && l2Press) {
       for(int i = 0; i < claw_motors_len; i++) {
         claw_motors[i].stop(brakeType::hold);
       }
     }
-    l2Press = ctrl.ButtonB.pressing();
+    l2Press = ctrl.ButtonX.pressing();
 
 
     vex::task::sleep(20); //Sleep the task for a short amount of time to prevent wasted resources. 
