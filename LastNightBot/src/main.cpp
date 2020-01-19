@@ -105,6 +105,7 @@ void goRobit(int time)
 void revRobit(int time)
 {
   spinLeft(-100);
+
   spinRight(-100);
   task::sleep(time);
   stopDrive();
@@ -279,6 +280,28 @@ void UpdateDriveVel(vex::controller::axis l, vex::controller::axis r, double dt)
   RMotor.setVelocity(r_drive_velocity, velocityUnits::pct);
   RMotor.spin(directionType::fwd);
 }
+
+void DriveAccArcade(vex::controller::axis f, vex::controller::axis r) {
+  double fwd = f.position();
+  double rot = r.position();
+
+  l_drive_velocity_goal = fwd + rot;
+  r_drive_velocity_goal = fwd - rot;
+}
+
+void UpdateArcadeVelocity(vex::motor l_drive_motor_, vex::motor r_drive_motor_, double dt, directionType direction) {
+    // ramp up velocity
+    l_drive_velocity = Approach(l_drive_velocity, l_drive_velocity_goal, dt);
+    r_drive_velocity = Approach(r_drive_velocity, r_drive_velocity_goal, dt);
+
+    // set motor velocity and spin
+    l_drive_motor_.setVelocity(l_drive_velocity, velocityUnits::pct);
+    l_drive_motor_.spin(direction);
+
+    r_drive_motor_.setVelocity(r_drive_velocity, velocityUnits::pct);
+    r_drive_motor_.spin(direction);
+}
+
 void UpdateUpperVelocity(vex::motor* arm_motors_, double dt, directionType direction) {
     // ramp up velocity
     upper_motor_velocity = Approach(upper_motor_velocity, upper_motor_velocity_goal, dt);
@@ -308,7 +331,9 @@ void usercontrol( void ) {
   while (1) {
     //driveTank(ctrl.Axis3, ctrl.Axis2);
     //UpdateDriveVel(ctrl.Axis3, ctrl.Axis2, DT);
-    driveArcade(ctrl.Axis3, ctrl.Axis4);
+    //driveArcade(ctrl.Axis3, ctrl.Axis4);
+    DriveAccArcade(ctrl.Axis3, ctrl.Axis4);
+    UpdateArcadeVelocity(LMotor, RMotor, DT, directionType::fwd);
 
     if(ctrl.ButtonR1.pressing()) {
       upper_motor_velocity_goal = -100.0;

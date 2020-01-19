@@ -152,8 +152,8 @@ void auton()
   moveArm(50);
   task::sleep(500);
   moveArm(0);
-  revRobit(2333);
-  goRobit(1000);
+  revRobit(1750);
+  goRobit(500);
 }
 
 void autonomous( void ) {
