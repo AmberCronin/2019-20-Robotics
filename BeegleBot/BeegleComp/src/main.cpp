@@ -13,6 +13,10 @@ using namespace vex;
 
 #define DT 10  // this is the constant we use for acceleration
 
+#define WHEEL_D 4
+#define PI 3.14169f
+
+
 // A global instance of vex::brain used for printing to the V5 brain screen
 vex::brain       Brain;
 // A global instance of vex::competition
@@ -102,12 +106,87 @@ void goArm(double pwr, int time)
   task::sleep(time);
   moveArm(0);
 }
+void brakeArm(double pwr, int time)
+{
+  goArm(pwr, time);
+  for(int i = 0; i < arm_motors_len; i++)
+  {
+    arm_motors[i].stop(brakeType::hold);
+  }
+}
 void goClaw(double pwr, int time)
 {
   moveClaw(pwr);
   task::sleep(time);
   moveClaw(0);
 }
+void brakeClaw(double pwr, int time)
+{
+  goClaw(pwr, time);
+  for(int i = 0; i < claw_motors_len; i++)
+  {
+    claw_motors[i].stop(brakeType::hold);
+  }
+}
+
+
+void resetRDriveEnc() {
+  RBMotor.resetRotation();
+  RFMotor.resetRotation();
+}
+void resetLDriveEnc() {
+  LBMotor.resetRotation();
+  LFMotor.resetRotation();
+}
+void resetDriveEnc() {
+  resetRDriveEnc();
+  resetLDriveEnc();
+}
+void setLDrivePwr(double pwr) {
+  LBMotor.setVelocity(pwr, velocityUnits::pct);
+  LFMotor.setVelocity(pwr, velocityUnits::pct);
+}
+void setRDrivePwr(double pwr) {
+  RBMotor.setVelocity(pwr, velocityUnits::pct);
+  RFMotor.setVelocity(pwr, velocityUnits::pct);
+}
+void setDrivePwr(double pwr) {
+  setLDrivePwr(pwr);
+  setRDrivePwr(pwr);
+}
+
+void brakeDrive() {
+  LBMotor.stop(brakeType::brake);
+  LFMotor.stop(brakeType::brake);
+  RBMotor.stop(brakeType::brake);
+  RFMotor.stop(brakeType::brake);
+}
+
+//advanced movement time
+void driveForward(float inches, bool coast = false, double pwr = 75) {
+  float wheelCirc = WHEEL_D * PI;
+  float rots = inches / wheelCirc;
+  resetDriveEnc();
+  LBMotor.rotateFor(rots, rotationUnits::rev, pwr, velocityUnits::pct, false);
+  LFMotor.rotateFor(rots, rotationUnits::rev, pwr, velocityUnits::pct, false);
+  RBMotor.rotateFor(rots, rotationUnits::rev, pwr, velocityUnits::pct, false);
+  RFMotor.rotateFor(rots, rotationUnits::rev, pwr, velocityUnits::pct, true);
+  if(!coast)
+    brakeDrive();
+}
+void driveBackwards(float inches, bool coast = false, double pwr = 75) {
+  float wheelCirc = WHEEL_D * PI;
+  float rots = inches / wheelCirc * (-1);
+  resetDriveEnc();
+  LBMotor.rotateFor(rots, rotationUnits::rev, pwr, velocityUnits::pct, false);
+  LFMotor.rotateFor(rots, rotationUnits::rev, pwr, velocityUnits::pct, false);
+  RBMotor.rotateFor(rots, rotationUnits::rev, pwr, velocityUnits::pct, false);
+  RFMotor.rotateFor(rots, rotationUnits::rev, pwr, velocityUnits::pct, true);
+  if(!coast)
+    brakeDrive();
+}
+
+
 
 
 vex::motor* AllocMotorList(vex::motor* list, int size) {
@@ -139,19 +218,43 @@ void pre_auton( void ) {
   initClawMotorList();
 }
 
-void auton()
+void initializeAuton() {
+  initArmMotorList();
+  initClawMotorList();
+  goArm(-50, 500);
+  goClaw(100, 350);
+  goArm(50, 500);
+  brakeClaw(-100, 250);
+
+}
+
+void auton() {
+  //robot initialization
+  initializeAuton();
+
+  driveBackwards(15, true);
+  driveForward(12);
+  goRobit(-75, 75, 350);
+  brakeDrive();
+  driveForward(10, true, 50);
+  task::sleep(100); //pause to allow for the cube to stop moving around
+  brakeClaw(100, 250); //grabbing the cube
+  brakeArm(-50, 1000); //lift cube up for mobility
+  driveBackwards(8, true, 50);
+  goRobit(-75, 75, 1000);
+  brakeDrive();
+  driveForward(20);
+  goArm(50, 750);
+  goClaw(-100, 250);
+}
+
+void autonBasic()
 {
   initArmMotorList();
   initClawMotorList();
-  moveArm(-50);
-  task::sleep(500);
-  moveArm(0);
-  moveClaw(100);
-  task::sleep(350);
-  moveClaw(0);
-  moveArm(50);
-  task::sleep(500);
-  moveArm(0);
+  goArm(-50, 500);
+  goClaw(100, 350);
+  goArm(50, 500);
   revRobit(1750);
   goRobit(500);
 }
