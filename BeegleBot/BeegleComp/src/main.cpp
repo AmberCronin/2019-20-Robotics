@@ -14,7 +14,7 @@ using namespace vex;
 #define DT 10  // this is the constant we use for acceleration
 
 #define WHEEL_D 4
-#define PI 3.14169f
+#define PI 3.142069f
 
 
 // A global instance of vex::brain used for printing to the V5 brain screen
@@ -233,19 +233,24 @@ void auton() {
   initializeAuton();
 
   driveBackwards(15, true);
-  driveForward(12);
-  goRobit(-75, 75, 350);
+  driveForward(25);
+  brakeArm(-50, 600);
+  goRobit(-75, 75, 900);
   brakeDrive();
-  driveForward(10, true, 50);
-  task::sleep(100); //pause to allow for the cube to stop moving around
-  brakeClaw(100, 250); //grabbing the cube
+  goArm(50, 600);
+  driveForward(8, true, 50);
+  driveForward(4, true, 25);
+  brakeClaw(50, 250); //grabbing the cube
   brakeArm(-50, 1000); //lift cube up for mobility
   driveBackwards(8, true, 50);
-  goRobit(-75, 75, 1000);
+  goRobit(-75, 75, 600);
   brakeDrive();
-  driveForward(20);
+  driveForward(30);
   goArm(50, 750);
+  goRobit(-75, 75, 250);
+  driveForward(4);
   goClaw(-100, 250);
+  driveBackwards(6);
 }
 
 void autonBasic()
