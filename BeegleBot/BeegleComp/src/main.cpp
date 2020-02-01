@@ -233,21 +233,23 @@ void auton() {
   initializeAuton();
 
   driveBackwards(15, true);
+  goRobit(-50, 50, 125);
+  brakeDrive();
   driveForward(25);
-  brakeArm(-50, 600);
-  goRobit(-75, 75, 900);
+  brakeArm(-50, 500);
+  goRobit(-75, 75, 800);
   brakeDrive();
   goArm(50, 600);
-  driveForward(8, true, 50);
+  driveForward(8, true, 50); //getting into position for grabbing the cube
   driveForward(4, true, 25);
   brakeClaw(50, 250); //grabbing the cube
   brakeArm(-50, 1000); //lift cube up for mobility
-  driveBackwards(8, true, 50);
+  driveBackwards(10, true, 50);
   goRobit(-75, 75, 600);
   brakeDrive();
   driveForward(30);
   goArm(50, 750);
-  goRobit(-75, 75, 250);
+  goRobit(-75, 75, 100);
   driveForward(4);
   goClaw(-100, 250);
   driveBackwards(6);
