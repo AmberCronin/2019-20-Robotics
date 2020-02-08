@@ -291,12 +291,12 @@ void auton() {
   driveForward(4, true, 25); //also getting into position, but slower
   brakeClaw(50, 250); //grabbing the cube
   brakeArm(-50, 1000); //lift cube up for mobility
-  driveBackwards(10, true, 50);//jerk backwards a little bit to put the cube away
-  goRobit(-75, 75, 600);//turns robot to the left more, facing cube bin
+  driveBackwards(13, true, 50);//jerk backwards a little bit to put the cube away
+  goRobit(-75, 75, 500);//turns robot to the left more, facing cube bin
   brakeDrive();//stops again lmao
   driveForward(30);//lets get this cube in the bin now
   goArm(50, 750);//lowers arm to dunk on the haters
-  goRobit(-75, 75, 100);//turns to the left to knock first cube to the side
+  goRobit(-75, 75, 250);//turns to the left to knock first cube to the side
   driveForward(4);//moves forward a little bit more
   goClaw(-100, 250);//opens claw, dropping cube
   driveBackwards(6);//gtfood
