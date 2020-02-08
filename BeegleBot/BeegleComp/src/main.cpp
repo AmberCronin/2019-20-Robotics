@@ -274,6 +274,27 @@ void initializeAuton() {
   brakeClaw(-100, 250);
 }
 
+
+void forwardAuton() {
+  driveForward(15); //places block in zone, sets up claw
+  brakeClaw(-100, 250);//opens claw again
+  goRobit(-75, 75, 300);//turns to the right to escape from ~tarkov~ wall
+  brakeDrive();//stop
+  driveBackwards(20);//goes back to get in position
+  goRobit(75, -75, 400);//turns to face cube
+  driveForward(10, true, 50);//forward to cube
+  brakeClaw(50, 300);//grabs cube
+  brakeArm(-50, 500);//raises arm for transport
+  goRobit(-75, 75, 450);//turns back to zone
+  brakeDrive();//stop
+  driveForward(16);//forward
+  brakeClaw(-50, 200);//open claw to drop cube
+  brakeArm(-50, 300);//raise arm out of the way
+  driveBackwards(10);//gtfo
+}
+
+
+
 //jake seal of approval
 void auton() {
   //robot initialization
@@ -284,7 +305,7 @@ void auton() {
   brakeDrive();//brakes drive to hold robot and remove uncertainies
   driveForward(25);//drives forward to the next cube
   brakeArm(-50, 500);//raises arm for turning
-  goRobit(-75, 75, 800);//turn robot to the left, getting into position for the next cube
+  goRobit(-75, 75, 600);//turn robot to the left, getting into position for the next cube
   brakeDrive();//stops drive again
   goArm(50, 600);//lowers arm around cube
   driveForward(8, true, 50); //getting into position for grabbing the cube
@@ -314,7 +335,7 @@ void autonBasic()
 }
 
 void autonomous( void ) {
-  auton();
+  forwardAuton();
 }
 
 
