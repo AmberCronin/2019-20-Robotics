@@ -211,6 +211,10 @@ void driveBackwards(float inches, bool coast = false, double pwr = 75) {
   if(!coast)
     brakeDrive();
 }
+void turnBrake(int lpwr, int rpwr, int time) {
+  goRobit(lpwr, rpwr, time);
+  brakeDrive();
+}
 
 
 
@@ -280,14 +284,14 @@ void forwardAuton() {
   brakeClaw(-100, 250);//opens claw again
   goRobit(-75, 75, 300);//turns to the right to escape from ~tarkov~ wall
   brakeDrive();//stop
-  driveBackwards(20);//goes back to get in position
+  driveBackwards(18);//goes back to get in position
   goRobit(75, -75, 400);//turns to face cube
   driveForward(10, true, 50);//forward to cube
   brakeClaw(50, 300);//grabs cube
   brakeArm(-50, 500);//raises arm for transport
-  goRobit(-75, 75, 450);//turns back to zone
+  goRobit(-75, 75, 500);//turns back to zone
   brakeDrive();//stop
-  driveForward(16);//forward
+  driveForward(15);//forward
   brakeClaw(-50, 200);//open claw to drop cube
   brakeArm(-50, 300);//raise arm out of the way
   driveBackwards(10);//gtfo
@@ -335,6 +339,9 @@ void autonBasic()
 }
 
 void autonomous( void ) {
+  initArmMotorList();
+  initClawMotorList();
+
   forwardAuton();
 }
 
