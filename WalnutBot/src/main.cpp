@@ -38,8 +38,7 @@ void auton() {
 }
 
 void autonomous( void ) {
-
-
+  auton();
 }
 
 void usercontrol( void ) {
@@ -96,8 +95,8 @@ void usercontrol( void ) {
       left_conveyer.ChangeVelocity(DT_G, FULLBAK, vex::directionType::fwd);
       right_conveyer.ChangeVelocity(DT_G, FULLBAK, vex::directionType::fwd);
     } else {
-      left_conveyer.Brake();
-      right_conveyer.Brake();
+      left_conveyer.Brake(true);
+      right_conveyer.Brake(true);
     }
 
     // update velocities here
