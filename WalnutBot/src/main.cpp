@@ -25,16 +25,22 @@ vex::controller ctrl(vex::controllerType::primary);
 #define DT_G 10.0
 
 
-
+vex::motor LFMotor(PORT2);
+vex::motor LBMotor(PORT9);
+vex::motor RFMotor(PORT11, true);
+vex::motor RBMotor(PORT19, true);
+Drive drive;
+// 15, 9
 
 void pre_auton( void ) {
   // All activities that occur before the competition starts
   // Example: clearing encoders, setting servo positions, ...
-  
+  WheelData wh_dat = {12.57, 1, 17.49};
+  drive.InitDrive(LBMotor, LFMotor, RBMotor, RFMotor, wh_dat);
 }
 
 void auton() {
-  
+
 }
 
 void autonomous( void ) {
@@ -42,14 +48,6 @@ void autonomous( void ) {
 }
 
 void usercontrol( void ) {
-  // drive motor declarations
-  vex::motor LFMotor(PORT2);
-  vex::motor LBMotor(PORT9);
-  vex::motor RFMotor(PORT11, true);
-  vex::motor RBMotor(PORT19, true);
-  Drive drive;
-  drive.InitDrive(LBMotor, LFMotor, RBMotor, RFMotor);
-
   // Ramp push and arm motor declarations
   vex::motor ramp_push_motor(PORT12);
   Motor ramp_push;

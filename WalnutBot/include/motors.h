@@ -16,6 +16,10 @@ double Approach(double current, double goal, double dt) {
     return goal;
 }
 
+
+//TODO: Add a CleanMotor function to reset velocities
+
+
 class Motor {
 private:
 	vex::motor* m;
