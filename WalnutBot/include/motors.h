@@ -16,6 +16,10 @@ double Approach(double current, double goal, double dt) {
     return goal;
 }
 
+
+//TODO: Add a CleanMotor function to reset velocities
+
+
 class Motor {
 private:
 	vex::motor* m;
@@ -36,7 +40,7 @@ public:
 	// Raw Velocity Increase/Driving
 	void ChangeVelocity(double dt, double velocity_goal, vex::directionType direction);
 	void UpdateVelocity();
-	void Brake();
+	void Brake(bool letRoll);
 
 	// Controlled driving
 	void DriveControlled(double inches);
@@ -66,11 +70,14 @@ void Motor::UpdateVelocity() {
 	this->m->spin(this->direction);
 }
 
-void Motor::Brake() {
+void Motor::Brake(bool letRoll = false) {
   this->velocity_goal = 0;
   this->velocity = 0;
   this->m->setVelocity(0, vex::velocityUnits::pct);
-	this->m->stop(vex::brakeType::hold);
+	if(letRoll)
+    this->m->stop(vex::brakeType::brake);
+  else
+    this->m->stop(vex::brakeType::hold);
 }
 
 void Motor::DriveControlled(double inches) {
